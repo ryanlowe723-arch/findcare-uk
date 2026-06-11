@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { Search, MapPin, Zap, Users, Shield, Clock, ChevronRight } from 'lucide-react'
@@ -27,8 +27,7 @@ export default function Home() {
   const [location, setLocation] = useState('')
   const [featured, setFeatured] = useState(null)
 
-  // Load featured on mount
-  useState(() => {
+  useEffect(() => {
     supabase
       .from('practitioners')
       .select('*')
@@ -36,7 +35,7 @@ export default function Home() {
       .eq('is_featured', true)
       .limit(3)
       .then(({ data }) => setFeatured(data || []))
-  })
+  }, [])
 
   const handleSearch = (e) => {
     e.preventDefault()
