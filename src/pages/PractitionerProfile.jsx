@@ -75,7 +75,7 @@ function BookingModal({ slot, practitioner, onClose, onSuccess }) {
           <br />
           {slot.appointment_type} · {timeStr}
           {slot.price > 0 && <span> · £{(slot.price / 100).toFixed(2)}</span>}
-          {slot.is_emergency && <span style={{ color: 'var(--c-red)', marginLeft: 6 }}>⚡ Emergency slot</span>}
+          {slot.is_emergency && <span style={{ color: 'var(--c-red)', marginLeft: 6, fontWeight: 600 }}>Urgent slot</span>}
         </div>
 
         {error && <div className="alert alert-error">{error}</div>}

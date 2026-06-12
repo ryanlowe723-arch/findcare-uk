@@ -92,7 +92,7 @@ export default function BlogPost() {
         {/* CTA */}
         <div style={{
           marginTop: 'var(--s-6)', padding: 'var(--s-5)',
-          background: 'linear-gradient(135deg, var(--c-cobalt-700) 0%, var(--c-ink-900) 100%)',
+          background: 'var(--c-ink-900)',
           borderRadius: 'var(--r-lg)', color: 'white', textAlign: 'center',
         }}>
           <h3 style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: '1.2rem', marginBottom: 8 }}>

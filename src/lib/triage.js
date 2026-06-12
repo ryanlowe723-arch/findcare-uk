@@ -5,14 +5,14 @@
  */
 
 export const BODY_AREAS = [
-  { id: 'knee',     label: 'Knee',            emoji: '🦵' },
-  { id: 'back',     label: 'Back & Spine',    emoji: '🔙' },
-  { id: 'shoulder', label: 'Shoulder & Arm',  emoji: '💪' },
-  { id: 'ankle',    label: 'Ankle & Foot',    emoji: '🦶' },
-  { id: 'neck',     label: 'Neck',            emoji: '🧣' },
-  { id: 'hip',      label: 'Hip & Pelvis',    emoji: '🦴' },
-  { id: 'head',     label: 'Head & Mind',     emoji: '🧠' },
-  { id: 'general',  label: 'General Health',  emoji: '🩺' },
+  { id: 'knee',     label: 'Knee' },
+  { id: 'back',     label: 'Back & spine' },
+  { id: 'shoulder', label: 'Shoulder & arm' },
+  { id: 'ankle',    label: 'Ankle & foot' },
+  { id: 'neck',     label: 'Neck' },
+  { id: 'hip',      label: 'Hip & pelvis' },
+  { id: 'head',     label: 'Head & mind' },
+  { id: 'general',  label: 'General health' },
 ]
 
 export const PROBLEMS = {

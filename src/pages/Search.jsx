@@ -296,8 +296,7 @@ export default function Search() {
                   aria-label={`${mode} view`}
                   style={{
                     padding: '8px 14px', display: 'flex', alignItems: 'center', gap: 6,
-                    fontSize: '0.78rem', fontWeight: 700, textTransform: 'uppercase',
-                    fontFamily: 'var(--font-display)', letterSpacing: '0.04em',
+                    fontSize: '0.82rem', fontWeight: 600, textTransform: 'capitalize',
                     background: viewMode === mode ? 'var(--c-cobalt-700)' : 'transparent',
                     color: viewMode === mode ? 'white' : 'var(--text-secondary)',
                     transition: 'all 0.2s',

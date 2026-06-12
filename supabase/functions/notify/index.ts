@@ -29,14 +29,14 @@ function template(type: string, data: Record<string, string>): { subject: string
           <p>Hi ${data.patient_name},</p>
           <p>Your <strong>${data.appointment_type}</strong> with <strong>${data.practitioner_name}</strong> is booked for:</p>
           <div style="background: #f1f5f9; border-radius: 8px; padding: 16px; margin: 16px 0; font-size: 16px;">
-            📅 <strong>${data.date}</strong> at <strong>${data.time}</strong>
+            <strong>${data.date}</strong> at <strong>${data.time}</strong>
           </div>
           <p>Need to cancel? <a href="${SITE_URL}/cancel-booking?token=${data.cancellation_token}" style="color: #1E3A8A;">Cancel your booking here</a>.</p>
         `),
       }
     case 'practitioner_approved':
       return {
-        subject: 'Your FindCare UK listing is live! 🎉',
+        subject: 'Your FindCare UK listing is live',
         html: wrap(`
           <h2 style="color: #0f172a;">Welcome aboard, ${data.name}!</h2>
           <p>Your listing has been approved and is now visible to patients searching in your area.</p>

@@ -86,7 +86,7 @@ export default function Admin() {
 
   return (
     <div className="page-top" style={{ minHeight: '100vh' }}>
-      <div style={{ background: 'linear-gradient(135deg, var(--c-ink-900) 0%, var(--c-cobalt-700) 100%)', padding: 'var(--s-6) 0 var(--s-4)', color: 'white' }}>
+      <div style={{ background: 'var(--c-ink-900)', padding: 'var(--s-6) 0 var(--s-4)', color: 'white' }}>
         <div className="page-container">
           <div className="section-tag" style={{ color: 'rgba(255,255,255,0.5)' }}>Admin Panel</div>
           <h1 style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: 'clamp(1.4rem, 3vw, 2rem)', letterSpacing: '-0.03em', marginTop: 4 }}>

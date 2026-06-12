@@ -88,8 +88,8 @@
   --header-bg:   rgba(255, 255, 255, 0.92);
   --header-blur: 16px;
 
-  --card-shadow:    0 4px 24px -6px rgba(15, 23, 42, 0.08), 0 1px 4px rgba(15, 23, 42, 0.04);
-  --card-shadow-hv: 0 16px 48px -10px rgba(0, 71, 171, 0.15), 0 2px 8px rgba(0, 71, 171, 0.08);
+  --card-shadow:    0 1px 3px rgba(15, 23, 42, 0.06);
+  --card-shadow-hv: 0 4px 12px rgba(15, 23, 42, 0.08);
 }
 
 /* ─────────────────────────────────────
@@ -189,25 +189,21 @@ input, textarea, select { font-family: inherit; }
   gap: 8px;
   background: var(--action-bg);
   color: var(--c-white);
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size: 0.8rem;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 0.875rem;
   padding: 10px 20px;
   border-radius: var(--r-md);
-  transition: background var(--dur-fast), box-shadow var(--dur-fast), transform var(--dur-fast);
+  transition: background var(--dur-fast);
 }
 
 .btn-primary:hover {
   background: var(--action-hover);
-  box-shadow: 0 4px 16px var(--action-glow);
-  transform: translateY(-1px);
 }
 
 .btn-primary-lg {
-  padding: 14px 32px;
-  font-size: 0.9rem;
+  padding: 13px 28px;
+  font-size: 0.925rem;
 }
 
 .btn-secondary {
@@ -216,21 +212,18 @@ input, textarea, select { font-family: inherit; }
   gap: 8px;
   background: transparent;
   color: var(--text-primary);
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size: 0.8rem;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 0.875rem;
   padding: 10px 20px;
   border-radius: var(--r-md);
-  border: 1.5px solid var(--surface-border);
-  transition: border-color var(--dur-fast), color var(--dur-fast), background var(--dur-fast);
+  border: 1px solid var(--c-ink-300);
+  transition: border-color var(--dur-fast), background var(--dur-fast);
 }
 
 .btn-secondary:hover {
-  border-color: var(--c-cobalt-100);
-  color: var(--c-cobalt-700);
-  background: var(--c-cobalt-50);
+  border-color: var(--c-ink-500);
+  background: var(--surface-raised);
 }
 
 .btn-danger {
@@ -239,15 +232,13 @@ input, textarea, select { font-family: inherit; }
   gap: 6px;
   background: transparent;
   color: var(--c-red);
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size: 0.75rem;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 0.82rem;
   padding: 8px 14px;
   border-radius: var(--r-md);
-  border: 1.5px solid var(--c-red);
-  transition: background var(--dur-fast), color var(--dur-fast);
+  border: 1px solid #fca5a5;
+  transition: background var(--dur-fast), color var(--dur-fast), border-color var(--dur-fast);
 }
 
 .btn-danger:hover { background: var(--c-red); color: white; }
@@ -297,9 +288,8 @@ input, textarea, select { font-family: inherit; }
 }
 
 .practitioner-card:hover {
-  transform: translateY(-3px);
   box-shadow: var(--card-shadow-hv);
-  border-color: var(--c-cobalt-50);
+  border-color: var(--c-ink-300);
 }
 
 .card-photo {
@@ -312,11 +302,11 @@ input, textarea, select { font-family: inherit; }
 .card-photo-placeholder {
   width: 100%;
   aspect-ratio: 4/3;
-  background: linear-gradient(135deg, var(--c-cobalt-50), var(--c-mist));
+  background: var(--surface-sunken);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--c-cobalt-100);
+  color: var(--c-ink-300);
 }
 
 .card-body {
@@ -403,13 +393,12 @@ input, textarea, select { font-family: inherit; }
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 6px;
   padding: 9px 12px;
   border-radius: var(--r-md);
-  font-family: var(--font-display);
-  font-size: 0.75rem;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
+  font-family: var(--font-body);
+  font-size: 0.82rem;
+  font-weight: 600;
   transition: all var(--dur-fast);
 }
 
@@ -417,14 +406,13 @@ input, textarea, select { font-family: inherit; }
 .card-btn-primary:hover { background: var(--action-hover); }
 
 .card-btn-secondary {
-  border: 1.5px solid var(--surface-border);
+  border: 1px solid var(--c-ink-300);
   color: var(--text-secondary);
 }
 
 .card-btn-secondary:hover {
-  border-color: var(--c-cobalt-100);
-  color: var(--c-cobalt-700);
-  background: var(--c-cobalt-50);
+  border-color: var(--c-ink-500);
+  background: var(--surface-raised);
 }
 
 /* ─────────────────────────────────────
@@ -433,9 +421,9 @@ input, textarea, select { font-family: inherit; }
 .search-bar {
   display: flex;
   background: white;
-  border: 1.5px solid var(--surface-border);
+  border: 1px solid var(--c-ink-300);
   border-radius: var(--r-lg);
-  box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+  box-shadow: var(--card-shadow);
   overflow: hidden;
 }
 
@@ -471,11 +459,9 @@ input, textarea, select { font-family: inherit; }
   gap: 8px;
   background: var(--action-bg);
   color: white;
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size: 0.85rem;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 0.9rem;
   padding: 0 32px;
   transition: background var(--dur-fast);
   white-space: nowrap;
@@ -620,11 +606,9 @@ input, textarea, select { font-family: inherit; }
 
 .tab-btn {
   padding: 12px 20px;
-  font-family: var(--font-display);
-  font-size: 0.8rem;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  font-weight: 600;
   color: var(--text-muted);
   border-bottom: 2px solid transparent;
   margin-bottom: -2px;
@@ -735,7 +719,7 @@ input, textarea, select { font-family: inherit; }
    PROFILE PAGE
 ────────────────────────────────────── */
 .profile-hero {
-  background: linear-gradient(135deg, var(--c-ink-900) 0%, var(--c-cobalt-700) 100%);
+  background: var(--c-ink-900);
   color: white;
   padding: calc(var(--header-h) + var(--s-6)) 0 var(--s-6);
 }

@@ -71,7 +71,6 @@ class ErrorBoundary extends Component {
           fontFamily: 'system-ui', padding: '2rem', textAlign: 'center',
           background: '#f8fafc',
         }}>
-          <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>⚠️</div>
           <h1 style={{ fontSize: '1.25rem', fontWeight: 700, marginBottom: '0.5rem', color: '#0f172a' }}>
             Something went wrong
           </h1>

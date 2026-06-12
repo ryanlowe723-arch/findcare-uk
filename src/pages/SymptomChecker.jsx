@@ -65,22 +65,23 @@ export default function SymptomChecker() {
               <h2 style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: '1.1rem', marginBottom: 'var(--s-3)', textAlign: 'center' }}>
                 Where's the problem?
               </h2>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))', gap: 12 }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 10 }}>
                 {BODY_AREAS.map(a => (
                   <button
                     key={a.id}
                     onClick={() => setArea(a)}
                     style={{
-                      background: 'white', border: '1.5px solid var(--surface-border)',
-                      borderRadius: 'var(--r-lg)', padding: 'var(--s-3)', textAlign: 'center',
-                      cursor: 'pointer', transition: 'all 0.2s', fontSize: '0.9rem', fontWeight: 600,
+                      background: 'white', border: '1px solid var(--surface-border)',
+                      borderRadius: 'var(--r-md)', padding: '16px 18px', textAlign: 'left',
+                      cursor: 'pointer', transition: 'border-color 0.2s', fontSize: '0.9rem', fontWeight: 600,
                       color: 'var(--text-primary)',
+                      display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                     }}
-                    onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--c-cobalt-100)'; e.currentTarget.style.transform = 'translateY(-2px)' }}
-                    onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--surface-border)'; e.currentTarget.style.transform = 'none' }}
+                    onMouseEnter={e => e.currentTarget.style.borderColor = 'var(--c-ink-300)'}
+                    onMouseLeave={e => e.currentTarget.style.borderColor = 'var(--surface-border)'}
                   >
-                    <div style={{ fontSize: '1.8rem', marginBottom: 8 }}>{a.emoji}</div>
                     {a.label}
+                    <ArrowRight size={15} style={{ color: 'var(--text-muted)', flexShrink: 0 }} />
                   </button>
                 ))}
               </div>
@@ -94,7 +95,7 @@ export default function SymptomChecker() {
                 <ArrowLeft size={14} /> Back
               </button>
               <h2 style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: '1.1rem', marginBottom: 'var(--s-3)', textAlign: 'center' }}>
-                {area.emoji} What best describes it?
+                {area.label} — what best describes it?
               </h2>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                 {PROBLEMS[area.id].map(p => (

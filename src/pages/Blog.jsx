@@ -51,8 +51,8 @@ export default function Blog() {
                 boxShadow: 'var(--card-shadow)', transition: 'all 0.2s',
                 display: 'flex', flexDirection: 'column', gap: 12,
               }}
-              onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-3px)'; e.currentTarget.style.boxShadow = 'var(--card-shadow-hv)' }}
-              onMouseLeave={e => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = 'var(--card-shadow)' }}
+              onMouseEnter={e => e.currentTarget.style.borderColor = 'var(--c-ink-300)'}
+              onMouseLeave={e => e.currentTarget.style.borderColor = 'var(--surface-border)'}
             >
               <span className="type-badge" style={{ alignSelf: 'flex-start' }}>{post.tag}</span>
               <h2 style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: '1.05rem', lineHeight: 1.3, color: 'var(--text-primary)' }}>
