@@ -14,19 +14,19 @@ import { blogPosts } from '../data/blogPosts'
 
 const HERO_IMAGES = [
   {
-    src: 'https://images.unsplash.com/photo-1519823551278-64ac92734fb1?auto=format&fit=crop&w=1000&q=80',
+    src: 'https://images.unsplash.com/photo-1519823551278-64ac92734fb1?auto=format&fit=crop&w=1600&q=80',
     caption: 'Physiotherapy & rehabilitation',
   },
   {
-    src: 'https://images.unsplash.com/photo-1606811841689-23dfddce3e95?auto=format&fit=crop&w=1000&q=80',
+    src: 'https://images.unsplash.com/photo-1606811841689-23dfddce3e95?auto=format&fit=crop&w=1600&q=80',
     caption: 'Dentistry',
   },
   {
-    src: 'https://images.unsplash.com/photo-1666214280557-f1b5022eb634?auto=format&fit=crop&w=1000&q=80',
+    src: 'https://images.unsplash.com/photo-1666214280557-f1b5022eb634?auto=format&fit=crop&w=1600&q=80',
     caption: 'Specialist consultations',
   },
   {
-    src: 'https://images.unsplash.com/photo-1638202993928-7267aad84c31?auto=format&fit=crop&w=1000&q=80',
+    src: 'https://images.unsplash.com/photo-1638202993928-7267aad84c31?auto=format&fit=crop&w=1600&q=80',
     caption: 'Private GPs',
   },
 ]
@@ -119,161 +119,171 @@ export default function Home() {
 
   return (
     <div className="page-top">
-      {/* ── HERO ── */}
+      {/* ── HERO: full-bleed rotating imagery, centered search ── */}
       <section style={{
-        background: 'var(--surface-raised)',
-        borderBottom: '1px solid var(--surface-border)',
-        padding: 'var(--s-10) 0',
+        position: 'relative',
+        overflow: 'hidden',
+        minHeight: 560,
+        display: 'flex',
+        alignItems: 'center',
+        padding: 'var(--s-12) 0',
       }}>
-        <div className="page-container hero-grid" style={{
-          display: 'grid',
-          gridTemplateColumns: '1.05fr 0.95fr',
-          gap: 'var(--s-8)',
-          alignItems: 'center',
+        {/* Background images */}
+        <AnimatePresence mode="sync">
+          <motion.img
+            key={heroIdx}
+            src={HERO_IMAGES[heroIdx].src}
+            alt=""
+            aria-hidden="true"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 1, ease: 'easeInOut' }}
+            style={{
+              position: 'absolute', inset: 0, zIndex: 0,
+              width: '100%', height: '100%', objectFit: 'cover',
+            }}
+          />
+        </AnimatePresence>
+
+        {/* Scrim for legibility */}
+        <div style={{
+          position: 'absolute', inset: 0, zIndex: 1,
+          background: 'rgba(15, 23, 42, 0.7)',
+        }} />
+
+        {/* Centered content */}
+        <div className="page-container" style={{
+          position: 'relative', zIndex: 2,
+          maxWidth: 860, textAlign: 'center', width: '100%',
         }}>
-          {/* Left: copy + search */}
-          <div>
-            <motion.div
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, ease: [0.19, 1, 0.22, 1] }}
-            >
-              <h1 style={{
-                fontFamily: 'var(--font-display)',
-                fontWeight: 800,
-                fontSize: 'clamp(1.9rem, 4vw, 2.8rem)',
-                letterSpacing: '-0.03em',
-                lineHeight: 1.12,
-                color: 'var(--text-primary)',
-                marginBottom: 'var(--s-2)',
-              }}>
-                Find the right practitioner for your condition
-              </h1>
-              <p style={{
-                fontSize: '1.02rem',
-                color: 'var(--text-secondary)',
-                marginBottom: 'var(--s-4)',
-                lineHeight: 1.65,
-                maxWidth: '52ch',
-              }}>
-                Search verified doctors, dentists, physiotherapists, and specialists across
-                the UK — with patient reviews, real availability, and same-day emergency slots.
-              </p>
-            </motion.div>
-
-            <motion.form
-              onSubmit={handleSearch}
-              className="search-bar"
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.08, ease: [0.19, 1, 0.22, 1] }}
-            >
-              <div className="search-field">
-                <Search size={17} className="search-field-icon" />
-                <input
-                  type="text"
-                  placeholder="Condition, injury, or specialist"
-                  value={condition}
-                  onChange={e => setCondition(e.target.value)}
-                  aria-label="Condition or concern"
-                />
-              </div>
-              <div className="search-field">
-                <MapPin size={17} className="search-field-icon" />
-                <input
-                  type="text"
-                  placeholder="Postcode or town"
-                  value={location}
-                  onChange={e => setLocation(e.target.value)}
-                  aria-label="Location"
-                />
-              </div>
-              <button type="submit" className="search-submit">
-                Search
-              </button>
-            </motion.form>
-
-            <div style={{ marginTop: 'var(--s-3)', display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 8 }}>
-              <span style={{ fontSize: '0.82rem', color: 'var(--text-muted)', marginRight: 4 }}>Popular:</span>
-              {QUICK_FILTERS.map(f => (
-                <button
-                  key={f}
-                  onClick={() => navigate(`/search?type=${encodeURIComponent(f)}`)}
-                  className="filter-chip"
-                  style={{ margin: 0, background: 'white' }}
-                >
-                  {f}
-                </button>
-              ))}
-            </div>
-
-            <div style={{ marginTop: 'var(--s-4)' }}>
-              <Link
-                to="/symptom-checker"
-                style={{
-                  display: 'inline-flex', alignItems: 'center', gap: 8,
-                  color: 'var(--c-cobalt-700)', fontSize: '0.9rem', fontWeight: 600,
-                }}
-              >
-                <Stethoscope size={15} />
-                Not sure who you need? Try the symptom checker
-                <ArrowRight size={14} />
-              </Link>
-            </div>
-          </div>
-
-          {/* Right: rotating practitioner images */}
-          <div className="hero-media" style={{
-            position: 'relative',
-            height: 420,
-            borderRadius: 'var(--r-lg)',
-            overflow: 'hidden',
-            border: '1px solid var(--surface-border)',
-            background: 'var(--surface-sunken)',
-          }}>
-            <AnimatePresence mode="sync">
-              <motion.img
-                key={heroIdx}
-                src={HERO_IMAGES[heroIdx].src}
-                alt={HERO_IMAGES[heroIdx].caption}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.8, ease: 'easeInOut' }}
-                style={{
-                  position: 'absolute', inset: 0,
-                  width: '100%', height: '100%', objectFit: 'cover',
-                }}
-              />
-            </AnimatePresence>
-
-            {/* Caption */}
-            <div style={{
-              position: 'absolute', bottom: 16, left: 16, zIndex: 2,
-              background: 'rgba(15, 23, 42, 0.78)', color: 'white',
-              padding: '8px 14px', borderRadius: 'var(--r-md)',
-              fontSize: '0.8rem', fontWeight: 600,
-              backdropFilter: 'blur(4px)',
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, ease: [0.19, 1, 0.22, 1] }}
+          >
+            <h1 style={{
+              fontFamily: 'var(--font-display)',
+              fontWeight: 800,
+              fontSize: 'clamp(2rem, 5vw, 3.2rem)',
+              letterSpacing: '-0.03em',
+              lineHeight: 1.1,
+              color: 'white',
+              marginBottom: 'var(--s-2)',
             }}>
-              {HERO_IMAGES[heroIdx].caption}
-            </div>
+              Find the right practitioner for your condition
+            </h1>
+            <p style={{
+              fontSize: '1.05rem',
+              color: 'rgba(255,255,255,0.8)',
+              marginBottom: 'var(--s-5)',
+              lineHeight: 1.65,
+              maxWidth: '56ch',
+              marginInline: 'auto',
+            }}>
+              Search verified doctors, dentists, physiotherapists, and specialists across
+              the UK — with patient reviews, real availability, and same-day emergency slots.
+            </p>
+          </motion.div>
 
-            {/* Dots */}
-            <div style={{ position: 'absolute', bottom: 20, right: 16, zIndex: 2, display: 'flex', gap: 6 }}>
-              {HERO_IMAGES.map((_, i) => (
-                <button
-                  key={i}
-                  onClick={() => setHeroIdx(i)}
-                  aria-label={`Image ${i + 1}`}
-                  style={{
-                    width: i === heroIdx ? 20 : 7, height: 7, borderRadius: 4,
-                    background: i === heroIdx ? 'white' : 'rgba(255,255,255,0.5)',
-                    transition: 'all 0.3s', padding: 0,
-                  }}
-                />
-              ))}
+          <motion.form
+            onSubmit={handleSearch}
+            className="search-bar"
+            style={{ maxWidth: 740, marginInline: 'auto', border: 'none' }}
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.08, ease: [0.19, 1, 0.22, 1] }}
+          >
+            <div className="search-field">
+              <Search size={17} className="search-field-icon" />
+              <input
+                type="text"
+                placeholder="Condition, injury, or specialist"
+                value={condition}
+                onChange={e => setCondition(e.target.value)}
+                aria-label="Condition or concern"
+              />
             </div>
+            <div className="search-field">
+              <MapPin size={17} className="search-field-icon" />
+              <input
+                type="text"
+                placeholder="Postcode or town"
+                value={location}
+                onChange={e => setLocation(e.target.value)}
+                aria-label="Location"
+              />
+            </div>
+            <button type="submit" className="search-submit">
+              Search
+            </button>
+          </motion.form>
+
+          <div style={{ marginTop: 'var(--s-3)', display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+            <span style={{ fontSize: '0.82rem', color: 'rgba(255,255,255,0.6)', marginRight: 4 }}>Popular:</span>
+            {QUICK_FILTERS.map(f => (
+              <button
+                key={f}
+                onClick={() => navigate(`/search?type=${encodeURIComponent(f)}`)}
+                style={{
+                  padding: '6px 15px',
+                  borderRadius: 999,
+                  border: '1px solid rgba(255,255,255,0.35)',
+                  background: 'rgba(255,255,255,0.1)',
+                  color: 'rgba(255,255,255,0.9)',
+                  fontSize: '0.8rem',
+                  fontWeight: 500,
+                  cursor: 'pointer',
+                  transition: 'background 0.2s',
+                }}
+                onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.22)'}
+                onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.1)'}
+              >
+                {f}
+              </button>
+            ))}
           </div>
+
+          <div style={{ marginTop: 'var(--s-4)' }}>
+            <Link
+              to="/symptom-checker"
+              style={{
+                display: 'inline-flex', alignItems: 'center', gap: 8,
+                color: 'rgba(255,255,255,0.85)', fontSize: '0.9rem', fontWeight: 600,
+              }}
+            >
+              <Stethoscope size={15} />
+              Not sure who you need? Try the symptom checker
+              <ArrowRight size={14} />
+            </Link>
+          </div>
+        </div>
+
+        {/* Caption */}
+        <div style={{
+          position: 'absolute', bottom: 18, left: 'var(--s-4)', zIndex: 2,
+          background: 'rgba(15, 23, 42, 0.6)', color: 'rgba(255,255,255,0.85)',
+          padding: '7px 13px', borderRadius: 'var(--r-md)',
+          fontSize: '0.78rem', fontWeight: 600,
+          backdropFilter: 'blur(4px)',
+        }}>
+          {HERO_IMAGES[heroIdx].caption}
+        </div>
+
+        {/* Dots */}
+        <div style={{ position: 'absolute', bottom: 22, right: 'var(--s-4)', zIndex: 2, display: 'flex', gap: 6 }}>
+          {HERO_IMAGES.map((_, i) => (
+            <button
+              key={i}
+              onClick={() => setHeroIdx(i)}
+              aria-label={`Image ${i + 1}`}
+              style={{
+                width: i === heroIdx ? 20 : 7, height: 7, borderRadius: 4,
+                background: i === heroIdx ? 'white' : 'rgba(255,255,255,0.45)',
+                transition: 'all 0.3s', padding: 0,
+              }}
+            />
+          ))}
         </div>
       </section>
 
@@ -612,13 +622,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Responsive: stack hero, hide image on small screens */}
-      <style>{`
-        @media (max-width: 920px) {
-          .hero-grid { grid-template-columns: 1fr !important; }
-          .hero-media { height: 260px !important; }
-        }
-      `}</style>
     </div>
   )
 }
