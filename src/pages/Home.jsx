@@ -1,17 +1,38 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import {
-  Search, MapPin, Zap, Users, Clock, ChevronRight,
+  Search, MapPin, Zap, Users, Clock, ChevronRight, ChevronDown,
   Stethoscope, ArrowRight, BadgeCheck, Star, BookOpen,
+  Activity, HeartPulse, Brain, Apple, Smile, Bone, PersonStanding, CalendarCheck,
+  MessageSquare, BellRing,
 } from 'lucide-react'
 import PractitionerCard from '../components/PractitionerCard'
 import { supabase } from '../lib/supabase'
 import { useSeo, ORG_JSONLD } from '../lib/seo'
 import { blogPosts } from '../data/blogPosts'
 
+const HERO_IMAGES = [
+  {
+    src: 'https://images.unsplash.com/photo-1519823551278-64ac92734fb1?auto=format&fit=crop&w=1000&q=80',
+    caption: 'Physiotherapy & rehabilitation',
+  },
+  {
+    src: 'https://images.unsplash.com/photo-1606811841689-23dfddce3e95?auto=format&fit=crop&w=1000&q=80',
+    caption: 'Dentistry',
+  },
+  {
+    src: 'https://images.unsplash.com/photo-1666214280557-f1b5022eb634?auto=format&fit=crop&w=1000&q=80',
+    caption: 'Specialist consultations',
+  },
+  {
+    src: 'https://images.unsplash.com/photo-1638202993928-7267aad84c31?auto=format&fit=crop&w=1000&q=80',
+    caption: 'Private GPs',
+  },
+]
+
 const QUICK_FILTERS = [
-  'Physiotherapist', 'GP', 'Sports Medicine', 'Osteopath', 'Chiropractor', 'Psychologist',
+  'Physiotherapist', 'GP', 'Dentist', 'Sports Medicine', 'Osteopath', 'Psychologist',
 ]
 
 const HOW_IT_WORKS = [
@@ -27,11 +48,45 @@ const TRUST_ITEMS = [
   { icon: Clock,      label: 'Real-time online booking' },
 ]
 
+const SPECIALTIES = [
+  { type: 'Physiotherapist', icon: Activity,       title: 'Physiotherapy',    body: 'Injury rehab, post-surgical recovery, chronic pain, and movement problems.' },
+  { type: 'GP',              icon: Stethoscope,    title: 'Private GPs',      body: 'Same-week appointments, general health checks, referrals, and prescriptions.' },
+  { type: 'Dentist',         icon: Smile,          title: 'Dentistry',        body: 'Check-ups, emergency dental care, hygiene, and cosmetic treatments.' },
+  { type: 'Sports Medicine', icon: HeartPulse,     title: 'Sports Medicine',  body: 'Diagnosis of sports injuries, MRI referrals, injections, and return-to-play.' },
+  { type: 'Osteopath',       icon: Bone,           title: 'Osteopathy',       body: 'Hands-on treatment for back, neck, and joint pain.' },
+  { type: 'Chiropractor',    icon: PersonStanding, title: 'Chiropractic',     body: 'Spinal adjustments and treatment for back and neck conditions.' },
+  { type: 'Psychologist',    icon: Brain,          title: 'Psychology',       body: 'Talking therapies for anxiety, depression, stress, and life challenges.' },
+  { type: 'Nutritionist',    icon: Apple,          title: 'Nutrition',        body: 'Personalised plans for weight, performance, and medical diets.' },
+]
+
+const POPULAR_CONDITIONS = [
+  'knee injury', 'back pain', 'sciatica', 'sports injury', 'ankle sprain',
+  'shoulder pain', 'neck pain', 'anxiety', 'hip pain', 'ACL tear',
+  'post-surgical rehab', 'chronic pain', 'tennis elbow', 'plantar fasciitis',
+  'whiplash', 'frozen shoulder', 'stress', 'headaches',
+]
+
+const PRACTITIONER_BENEFITS = [
+  { icon: BadgeCheck,    title: 'Verified listing', body: 'Your registration is checked and badged — patients trust verified profiles and click them more.' },
+  { icon: CalendarCheck, title: 'Online bookings',  body: 'Set your weekly hours once, generate a month of bookable slots in one click, and fill your diary while you work.' },
+  { icon: MessageSquare, title: 'Patient enquiries', body: 'Direct questions land in your inbox. Reply by email or phone — no middleman, no commission.' },
+  { icon: BellRing,      title: 'Waitlist capture',  body: 'Fully booked? Patients join your waitlist instead of moving on to a competitor.' },
+]
+
+const FAQ_PREVIEW = [
+  { q: 'Is FindCare UK free to use?', a: 'Yes — searching, comparing practitioners, sending enquiries, and booking appointments are all completely free for patients. You only pay the practitioner for your appointment.' },
+  { q: 'Are the practitioners verified?', a: 'Every practitioner must provide their professional registration number (GMC, HCPC, NMC, GOsC, GCC, or BACP), which we check against the official register before their listing goes live.' },
+  { q: 'Do I need an account to book?', a: 'No. You can search and book without creating an account — just provide your name and email when booking so the practitioner can contact you.' },
+  { q: 'How do emergency appointments work?', a: 'Practitioners flag same-day and urgent slots. Filter your search by "Emergency / same-day slots" to see only practitioners who can see you today.' },
+]
+
 export default function Home() {
   const navigate = useNavigate()
   const [condition, setCondition] = useState('')
   const [location, setLocation] = useState('')
   const [featured, setFeatured] = useState(null)
+  const [heroIdx, setHeroIdx] = useState(0)
+  const [openFaq, setOpenFaq] = useState(null)
 
   useSeo({
     path: '/',
@@ -48,6 +103,12 @@ export default function Home() {
       .then(({ data }) => setFeatured(data || []))
   }, [])
 
+  // Rotate hero images
+  useEffect(() => {
+    const t = setInterval(() => setHeroIdx(i => (i + 1) % HERO_IMAGES.length), 4500)
+    return () => clearInterval(t)
+  }, [])
+
   const handleSearch = (e) => {
     e.preventDefault()
     const params = new URLSearchParams()
@@ -56,110 +117,162 @@ export default function Home() {
     navigate(`/search?${params.toString()}`)
   }
 
-  const handleQuickFilter = (type) => {
-    navigate(`/search?type=${encodeURIComponent(type)}`)
-  }
-
   return (
     <div className="page-top">
       {/* ── HERO ── */}
       <section style={{
         background: 'var(--surface-raised)',
         borderBottom: '1px solid var(--surface-border)',
-        padding: 'var(--s-12) 0 var(--s-10)',
+        padding: 'var(--s-10) 0',
       }}>
-        <div className="page-container">
-          <motion.div
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, ease: [0.19, 1, 0.22, 1] }}
-            style={{ maxWidth: 820 }}
-          >
-            <h1 style={{
-              fontFamily: 'var(--font-display)',
-              fontWeight: 800,
-              fontSize: 'clamp(1.9rem, 4.5vw, 3rem)',
-              letterSpacing: '-0.03em',
-              lineHeight: 1.12,
-              color: 'var(--text-primary)',
-              marginBottom: 'var(--s-2)',
-            }}>
-              Find the right practitioner for your condition
-            </h1>
-            <p style={{
-              fontSize: '1.05rem',
-              color: 'var(--text-secondary)',
-              marginBottom: 'var(--s-5)',
-              lineHeight: 1.65,
-              maxWidth: '56ch',
-            }}>
-              Search verified doctors, physiotherapists, and specialists across the UK —
-              with patient reviews, real availability, and same-day emergency slots.
-            </p>
-          </motion.div>
+        <div className="page-container hero-grid" style={{
+          display: 'grid',
+          gridTemplateColumns: '1.05fr 0.95fr',
+          gap: 'var(--s-8)',
+          alignItems: 'center',
+        }}>
+          {/* Left: copy + search */}
+          <div>
+            <motion.div
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, ease: [0.19, 1, 0.22, 1] }}
+            >
+              <h1 style={{
+                fontFamily: 'var(--font-display)',
+                fontWeight: 800,
+                fontSize: 'clamp(1.9rem, 4vw, 2.8rem)',
+                letterSpacing: '-0.03em',
+                lineHeight: 1.12,
+                color: 'var(--text-primary)',
+                marginBottom: 'var(--s-2)',
+              }}>
+                Find the right practitioner for your condition
+              </h1>
+              <p style={{
+                fontSize: '1.02rem',
+                color: 'var(--text-secondary)',
+                marginBottom: 'var(--s-4)',
+                lineHeight: 1.65,
+                maxWidth: '52ch',
+              }}>
+                Search verified doctors, dentists, physiotherapists, and specialists across
+                the UK — with patient reviews, real availability, and same-day emergency slots.
+              </p>
+            </motion.div>
 
-          {/* Search bar */}
-          <motion.form
-            onSubmit={handleSearch}
-            className="search-bar"
-            style={{ maxWidth: 820 }}
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.08, ease: [0.19, 1, 0.22, 1] }}
-          >
-            <div className="search-field">
-              <Search size={17} className="search-field-icon" />
-              <input
-                type="text"
-                placeholder="Condition, injury, or specialist"
-                value={condition}
-                onChange={e => setCondition(e.target.value)}
-                aria-label="Condition or concern"
-              />
-            </div>
-            <div className="search-field">
-              <MapPin size={17} className="search-field-icon" />
-              <input
-                type="text"
-                placeholder="Postcode or town"
-                value={location}
-                onChange={e => setLocation(e.target.value)}
-                aria-label="Location"
-              />
-            </div>
-            <button type="submit" className="search-submit">
-              Search
-            </button>
-          </motion.form>
-
-          {/* Quick filters */}
-          <div style={{ marginTop: 'var(--s-3)', display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 8 }}>
-            <span style={{ fontSize: '0.82rem', color: 'var(--text-muted)', marginRight: 4 }}>Popular:</span>
-            {QUICK_FILTERS.map(f => (
-              <button
-                key={f}
-                onClick={() => handleQuickFilter(f)}
-                className="filter-chip"
-                style={{ margin: 0, background: 'white' }}
-              >
-                {f}
+            <motion.form
+              onSubmit={handleSearch}
+              className="search-bar"
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.08, ease: [0.19, 1, 0.22, 1] }}
+            >
+              <div className="search-field">
+                <Search size={17} className="search-field-icon" />
+                <input
+                  type="text"
+                  placeholder="Condition, injury, or specialist"
+                  value={condition}
+                  onChange={e => setCondition(e.target.value)}
+                  aria-label="Condition or concern"
+                />
+              </div>
+              <div className="search-field">
+                <MapPin size={17} className="search-field-icon" />
+                <input
+                  type="text"
+                  placeholder="Postcode or town"
+                  value={location}
+                  onChange={e => setLocation(e.target.value)}
+                  aria-label="Location"
+                />
+              </div>
+              <button type="submit" className="search-submit">
+                Search
               </button>
-            ))}
+            </motion.form>
+
+            <div style={{ marginTop: 'var(--s-3)', display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 8 }}>
+              <span style={{ fontSize: '0.82rem', color: 'var(--text-muted)', marginRight: 4 }}>Popular:</span>
+              {QUICK_FILTERS.map(f => (
+                <button
+                  key={f}
+                  onClick={() => navigate(`/search?type=${encodeURIComponent(f)}`)}
+                  className="filter-chip"
+                  style={{ margin: 0, background: 'white' }}
+                >
+                  {f}
+                </button>
+              ))}
+            </div>
+
+            <div style={{ marginTop: 'var(--s-4)' }}>
+              <Link
+                to="/symptom-checker"
+                style={{
+                  display: 'inline-flex', alignItems: 'center', gap: 8,
+                  color: 'var(--c-cobalt-700)', fontSize: '0.9rem', fontWeight: 600,
+                }}
+              >
+                <Stethoscope size={15} />
+                Not sure who you need? Try the symptom checker
+                <ArrowRight size={14} />
+              </Link>
+            </div>
           </div>
 
-          {/* Symptom checker hint */}
-          <div style={{ marginTop: 'var(--s-4)' }}>
-            <Link
-              to="/symptom-checker"
-              style={{
-                display: 'inline-flex', alignItems: 'center', gap: 8,
-                color: 'var(--c-cobalt-700)', fontSize: '0.9rem', fontWeight: 600,
-              }}
-            >
-              <Stethoscope size={15} />
-              Not sure who you need? Try the symptom checker
-              <ArrowRight size={14} />
-            </Link>
+          {/* Right: rotating practitioner images */}
+          <div className="hero-media" style={{
+            position: 'relative',
+            height: 420,
+            borderRadius: 'var(--r-lg)',
+            overflow: 'hidden',
+            border: '1px solid var(--surface-border)',
+            background: 'var(--surface-sunken)',
+          }}>
+            <AnimatePresence mode="sync">
+              <motion.img
+                key={heroIdx}
+                src={HERO_IMAGES[heroIdx].src}
+                alt={HERO_IMAGES[heroIdx].caption}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.8, ease: 'easeInOut' }}
+                style={{
+                  position: 'absolute', inset: 0,
+                  width: '100%', height: '100%', objectFit: 'cover',
+                }}
+              />
+            </AnimatePresence>
+
+            {/* Caption */}
+            <div style={{
+              position: 'absolute', bottom: 16, left: 16, zIndex: 2,
+              background: 'rgba(15, 23, 42, 0.78)', color: 'white',
+              padding: '8px 14px', borderRadius: 'var(--r-md)',
+              fontSize: '0.8rem', fontWeight: 600,
+              backdropFilter: 'blur(4px)',
+            }}>
+              {HERO_IMAGES[heroIdx].caption}
+            </div>
+
+            {/* Dots */}
+            <div style={{ position: 'absolute', bottom: 20, right: 16, zIndex: 2, display: 'flex', gap: 6 }}>
+              {HERO_IMAGES.map((_, i) => (
+                <button
+                  key={i}
+                  onClick={() => setHeroIdx(i)}
+                  aria-label={`Image ${i + 1}`}
+                  style={{
+                    width: i === heroIdx ? 20 : 7, height: 7, borderRadius: 4,
+                    background: i === heroIdx ? 'white' : 'rgba(255,255,255,0.5)',
+                    transition: 'all 0.3s', padding: 0,
+                  }}
+                />
+              ))}
+            </div>
           </div>
         </div>
       </section>
@@ -181,9 +294,9 @@ export default function Home() {
       </section>
 
       {/* ── HOW IT WORKS ── */}
-      <section style={{ padding: 'var(--s-12) 0' }}>
+      <section style={{ padding: 'var(--s-10) 0' }}>
         <div className="page-container">
-          <div style={{ marginBottom: 'var(--s-6)' }}>
+          <div style={{ marginBottom: 'var(--s-5)' }}>
             <h2 className="section-title" style={{ fontSize: 'clamp(1.4rem, 3vw, 2rem)' }}>How it works</h2>
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 'var(--s-4)' }}>
@@ -218,8 +331,92 @@ export default function Home() {
         </div>
       </section>
 
+      {/* ── BROWSE BY SPECIALTY ── */}
+      <section style={{ padding: '0 0 var(--s-10)' }}>
+        <div className="page-container">
+          <div style={{ marginBottom: 'var(--s-5)' }}>
+            <h2 className="section-title" style={{ fontSize: 'clamp(1.4rem, 3vw, 2rem)' }}>Browse by specialty</h2>
+            <p style={{ color: 'var(--text-secondary)', marginTop: 8, fontSize: '0.95rem' }}>
+              Every practitioner is registration-checked before they appear in results.
+            </p>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', gap: 'var(--s-3)' }}>
+            {SPECIALTIES.map(({ type, icon: Icon, title, body }) => (
+              <Link
+                key={type}
+                to={`/search?type=${encodeURIComponent(type)}`}
+                style={{
+                  background: 'white', border: '1px solid var(--surface-border)',
+                  borderRadius: 'var(--r-lg)', padding: 'var(--s-3) var(--s-4)',
+                  display: 'flex', flexDirection: 'column', gap: 8,
+                  transition: 'border-color 0.2s',
+                }}
+                onMouseEnter={e => e.currentTarget.style.borderColor = 'var(--c-ink-300)'}
+                onMouseLeave={e => e.currentTarget.style.borderColor = 'var(--surface-border)'}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <div style={{
+                    width: 36, height: 36, borderRadius: 'var(--r-md)',
+                    background: 'var(--c-cobalt-50)', color: 'var(--c-cobalt-700)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  }}>
+                    <Icon size={17} />
+                  </div>
+                  <ChevronRight size={15} style={{ color: 'var(--text-muted)' }} />
+                </div>
+                <h3 style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: '0.95rem', color: 'var(--text-primary)' }}>{title}</h3>
+                <p style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', lineHeight: 1.55 }}>{body}</p>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── EMERGENCY BAND ── */}
+      <section style={{ padding: '0 0 var(--s-10)' }}>
+        <div className="page-container">
+          <div style={{
+            background: 'var(--c-ink-900)',
+            borderRadius: 'var(--r-lg)',
+            padding: 'var(--s-5) var(--s-6)',
+            color: 'white',
+            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+            gap: 'var(--s-4)', flexWrap: 'wrap',
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--s-3)' }}>
+              <div style={{
+                width: 44, height: 44, borderRadius: 'var(--r-md)',
+                background: 'rgba(220,38,38,0.25)', color: '#fca5a5',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+              }}>
+                <Zap size={20} />
+              </div>
+              <div>
+                <h2 style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: '1.1rem', marginBottom: 4 }}>
+                  Need to see someone today?
+                </h2>
+                <p style={{ color: 'rgba(255,255,255,0.65)', fontSize: '0.875rem', maxWidth: '56ch' }}>
+                  Many practitioners hold same-day emergency slots for acute injuries and urgent
+                  problems. Filter to see only who can see you now.
+                </p>
+              </div>
+            </div>
+            <Link
+              to="/search?emergency=1"
+              className="btn-primary"
+              style={{ flexShrink: 0, background: 'white', color: 'var(--c-ink-900)' }}
+            >
+              Find same-day slots
+            </Link>
+          </div>
+          <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginTop: 10, textAlign: 'center' }}>
+            For life-threatening emergencies — chest pain, breathing difficulty, signs of stroke — call 999.
+          </p>
+        </div>
+      </section>
+
       {/* ── SYMPTOM CHECKER PROMO ── */}
-      <section style={{ padding: '0 0 var(--s-12)' }}>
+      <section style={{ padding: '0 0 var(--s-10)' }}>
         <div className="page-container">
           <div style={{
             background: 'white',
@@ -253,6 +450,27 @@ export default function Home() {
         </div>
       </section>
 
+      {/* ── POPULAR SEARCHES ── */}
+      <section style={{ padding: '0 0 var(--s-10)' }}>
+        <div className="page-container">
+          <h2 style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: '1.1rem', marginBottom: 'var(--s-3)' }}>
+            Popular searches
+          </h2>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+            {POPULAR_CONDITIONS.map(c => (
+              <Link
+                key={c}
+                to={`/search?condition=${encodeURIComponent(c)}`}
+                className="filter-chip"
+                style={{ margin: 0, background: 'white', textTransform: 'capitalize' }}
+              >
+                {c}
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* ── FEATURED PRACTITIONERS ── */}
       {featured && featured.length > 0 && (
         <section style={{ padding: 'var(--s-10) 0', background: 'var(--surface-raised)', borderTop: '1px solid var(--surface-border)', borderBottom: '1px solid var(--surface-border)' }}>
@@ -271,7 +489,7 @@ export default function Home() {
       )}
 
       {/* ── GUIDES TEASER ── */}
-      <section style={{ padding: 'var(--s-12) 0 0' }}>
+      <section style={{ padding: 'var(--s-10) 0 0' }}>
         <div className="page-container">
           <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: 'var(--s-5)', flexWrap: 'wrap', gap: 12 }}>
             <h2 className="section-title" style={{ fontSize: 'clamp(1.4rem, 3vw, 2rem)' }}>Know before you book</h2>
@@ -304,26 +522,87 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ── PRACTITIONER CTA ── */}
-      <section style={{ padding: 'var(--s-12) 0' }}>
+      {/* ── FAQ PREVIEW ── */}
+      <section style={{ padding: 'var(--s-10) 0' }}>
+        <div className="page-container" style={{ maxWidth: 880 }}>
+          <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: 'var(--s-5)', flexWrap: 'wrap', gap: 12 }}>
+            <h2 className="section-title" style={{ fontSize: 'clamp(1.4rem, 3vw, 2rem)' }}>Common questions</h2>
+            <Link to="/faq" style={{ display: 'flex', alignItems: 'center', gap: 4, color: 'var(--c-cobalt-700)', fontWeight: 600, fontSize: '0.875rem' }}>
+              All FAQs <ChevronRight size={16} />
+            </Link>
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+            {FAQ_PREVIEW.map((faq, i) => (
+              <div key={i} style={{ border: '1px solid var(--surface-border)', borderRadius: 'var(--r-md)', overflow: 'hidden', background: 'white' }}>
+                <button
+                  onClick={() => setOpenFaq(openFaq === i ? null : i)}
+                  style={{
+                    width: '100%', padding: '15px 18px', textAlign: 'left',
+                    display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12,
+                    fontWeight: 600, fontSize: '0.925rem', color: 'var(--text-primary)',
+                  }}
+                >
+                  {faq.q}
+                  <ChevronDown size={16} style={{ transform: openFaq === i ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s', flexShrink: 0 }} />
+                </button>
+                {openFaq === i && (
+                  <div style={{ padding: '0 18px 16px', fontSize: '0.875rem', lineHeight: 1.7, color: 'var(--text-secondary)' }}>
+                    {faq.a}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── FOR PRACTITIONERS ── */}
+      <section style={{ padding: 'var(--s-10) 0', background: 'var(--surface-raised)', borderTop: '1px solid var(--surface-border)' }}>
         <div className="page-container">
+          <div style={{ marginBottom: 'var(--s-5)', maxWidth: 620 }}>
+            <h2 className="section-title" style={{ fontSize: 'clamp(1.4rem, 3vw, 2rem)' }}>
+              For healthcare professionals
+            </h2>
+            <p style={{ color: 'var(--text-secondary)', marginTop: 8, fontSize: '0.95rem', lineHeight: 1.65 }}>
+              A free, verified listing that fills your diary — built for independent
+              practitioners and small clinics. No commission, no contracts.
+            </p>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(230px, 1fr))', gap: 'var(--s-3)', marginBottom: 'var(--s-5)' }}>
+            {PRACTITIONER_BENEFITS.map(({ icon: Icon, title, body }) => (
+              <div key={title} style={{
+                background: 'white', border: '1px solid var(--surface-border)',
+                borderRadius: 'var(--r-lg)', padding: 'var(--s-4)',
+              }}>
+                <div style={{
+                  width: 36, height: 36, borderRadius: 'var(--r-md)',
+                  background: 'var(--c-cobalt-50)', color: 'var(--c-cobalt-700)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  marginBottom: 12,
+                }}>
+                  <Icon size={17} />
+                </div>
+                <h3 style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: '0.95rem', marginBottom: 6 }}>{title}</h3>
+                <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', lineHeight: 1.6 }}>{body}</p>
+              </div>
+            ))}
+          </div>
+
           <div style={{
             background: 'var(--c-ink-900)',
             borderRadius: 'var(--r-lg)',
-            padding: 'var(--s-6)',
+            padding: 'var(--s-5) var(--s-6)',
             color: 'white',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            gap: 'var(--s-5)',
-            flexWrap: 'wrap',
+            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+            gap: 'var(--s-4)', flexWrap: 'wrap',
           }}>
             <div>
-              <h2 style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 'clamp(1.2rem, 2.5vw, 1.6rem)', letterSpacing: '-0.02em', marginBottom: 8 }}>
-                Are you a healthcare professional?
-              </h2>
-              <p style={{ color: 'rgba(255,255,255,0.65)', fontSize: '0.9rem', maxWidth: '52ch' }}>
-                Free verified listing, online bookings, patient enquiries, and review management.
+              <h3 style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: '1.15rem', marginBottom: 4 }}>
+                Join the directory in under 10 minutes
+              </h3>
+              <p style={{ color: 'rgba(255,255,255,0.65)', fontSize: '0.875rem' }}>
+                Verification usually completes within 24–48 hours.
               </p>
             </div>
             <Link to="/register" className="btn-primary" style={{ flexShrink: 0, background: 'white', color: 'var(--c-ink-900)' }}>
@@ -332,6 +611,14 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {/* Responsive: stack hero, hide image on small screens */}
+      <style>{`
+        @media (max-width: 920px) {
+          .hero-grid { grid-template-columns: 1fr !important; }
+          .hero-media { height: 260px !important; }
+        }
+      `}</style>
     </div>
   )
 }

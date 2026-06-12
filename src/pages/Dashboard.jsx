@@ -8,7 +8,7 @@ import {
 } from 'lucide-react'
 import ReviewStars from '../components/ReviewStars'
 
-const TYPES = ['GP', 'Physiotherapist', 'Sports Medicine', 'Osteopath', 'Chiropractor', 'Psychologist', 'Nutritionist', 'Specialist']
+const TYPES = ['GP', 'Physiotherapist', 'Dentist', 'Sports Medicine', 'Osteopath', 'Chiropractor', 'Psychologist', 'Nutritionist', 'Specialist']
 const DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
 
 function TagInput({ value, onChange, placeholder }) {

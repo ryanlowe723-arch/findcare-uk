@@ -7,7 +7,7 @@ import { useSeo } from '../lib/seo'
 
 const STEPS = ['Identity', 'Credentials', 'Practice', 'Location', 'Services']
 
-const TYPES = ['GP', 'Physiotherapist', 'Sports Medicine', 'Osteopath', 'Chiropractor', 'Psychologist', 'Nutritionist', 'Specialist']
+const TYPES = ['GP', 'Physiotherapist', 'Dentist', 'Sports Medicine', 'Osteopath', 'Chiropractor', 'Psychologist', 'Nutritionist', 'Specialist']
 const TITLES = ['Dr', 'Mr', 'Mrs', 'Ms', 'Miss', 'Prof']
 const LANGUAGES = ['English', 'Welsh', 'French', 'Spanish', 'Urdu', 'Punjabi', 'Hindi', 'Arabic', 'Polish', 'Bengali']
 const REG_BODIES = ['GMC', 'HCPC', 'NMC', 'GOsC', 'GCC', 'BACP', 'BPS', 'AfN', 'Other']

@@ -152,6 +152,14 @@ export const PROBLEMS = {
       advice: 'A GP is the right starting point for unexplained or general symptoms — they can examine, investigate, and refer onwards.',
     },
     {
+      id: 'dental',
+      label: 'Toothache or dental problem',
+      types: ['Dentist'],
+      keywords: 'toothache',
+      advice: 'Dentists handle toothache, broken teeth, gum problems, and check-ups. Many offer emergency same-day appointments for severe pain or trauma.',
+      redFlag: 'Facial swelling that affects your breathing or swallowing, or swelling spreading towards the eye, needs A&E — dental infections can become serious quickly.',
+    },
+    {
       id: 'nutrition',
       label: 'Diet, weight, or nutrition support',
       types: ['Nutritionist'],
