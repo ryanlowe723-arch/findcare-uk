@@ -1,9 +1,14 @@
 import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { Search, MapPin, Zap, Users, Shield, Clock, ChevronRight } from 'lucide-react'
+import {
+  Search, MapPin, Zap, Users, Shield, Clock, ChevronRight,
+  Stethoscope, ArrowRight, BadgeCheck, Star, BookOpen,
+} from 'lucide-react'
 import PractitionerCard from '../components/PractitionerCard'
 import { supabase } from '../lib/supabase'
+import { useSeo, ORG_JSONLD } from '../lib/seo'
+import { blogPosts } from '../data/blogPosts'
 
 const QUICK_FILTERS = [
   'Physiotherapist', 'GP', 'Sports Medicine', 'Osteopath', 'Chiropractor', 'Psychologist',
@@ -16,9 +21,10 @@ const HOW_IT_WORKS = [
 ]
 
 const TRUST_ITEMS = [
-  { icon: Shield, label: 'Verified practitioners' },
-  { icon: Zap,    label: 'Emergency slots available' },
-  { icon: Clock,  label: 'Real-time availability' },
+  { icon: BadgeCheck, label: 'Credentials verified against official registers' },
+  { icon: Zap,        label: 'Emergency & same-day slots' },
+  { icon: Star,       label: 'Moderated patient reviews' },
+  { icon: Clock,      label: 'Real-time online booking' },
 ]
 
 export default function Home() {
@@ -26,6 +32,11 @@ export default function Home() {
   const [condition, setCondition] = useState('')
   const [location, setLocation] = useState('')
   const [featured, setFeatured] = useState(null)
+
+  useSeo({
+    path: '/',
+    jsonLd: ORG_JSONLD,
+  })
 
   useEffect(() => {
     supabase
@@ -85,8 +96,8 @@ export default function Home() {
               marginBottom: 'var(--s-5)',
               lineHeight: 1.6,
             }}>
-              Search by condition or injury, filter by location and availability — including
-              emergency&nbsp;slots.
+              Verified doctors, physios & specialists — with reviews, real availability,
+              and emergency&nbsp;slots.
             </p>
           </motion.div>
 
@@ -148,6 +159,26 @@ export default function Home() {
               </button>
             ))}
           </div>
+
+          {/* Symptom checker hint */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.4 }}
+            style={{ marginTop: 'var(--s-4)' }}
+          >
+            <Link
+              to="/symptom-checker"
+              style={{
+                display: 'inline-flex', alignItems: 'center', gap: 8,
+                color: 'rgba(255,255,255,0.75)', fontSize: '0.875rem', fontWeight: 500,
+              }}
+            >
+              <Stethoscope size={15} />
+              Not sure who you need? Try the symptom checker
+              <ArrowRight size={14} />
+            </Link>
+          </motion.div>
         </div>
       </section>
 
@@ -190,15 +221,10 @@ export default function Home() {
                 }}
               >
                 <div style={{
-                  width: 48,
-                  height: 48,
-                  borderRadius: 'var(--r-md)',
+                  width: 48, height: 48, borderRadius: 'var(--r-md)',
                   background: 'var(--c-cobalt-50)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  marginBottom: 'var(--s-2)',
-                  color: 'var(--c-cobalt-700)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  marginBottom: 'var(--s-2)', color: 'var(--c-cobalt-700)',
                 }}>
                   <Icon size={22} />
                 </div>
@@ -206,6 +232,42 @@ export default function Home() {
                 <p style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', lineHeight: 1.6 }}>{body}</p>
               </motion.div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── SYMPTOM CHECKER PROMO ── */}
+      <section style={{ padding: '0 0 var(--s-12)' }}>
+        <div className="page-container">
+          <div style={{
+            background: 'var(--surface-raised)',
+            border: '1px solid var(--surface-border)',
+            borderRadius: 'var(--r-xl)',
+            padding: 'var(--s-6)',
+            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+            gap: 'var(--s-5)', flexWrap: 'wrap',
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--s-3)' }}>
+              <div style={{
+                width: 56, height: 56, borderRadius: 'var(--r-lg)',
+                background: 'var(--c-cobalt-50)', color: 'var(--c-cobalt-700)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+              }}>
+                <Stethoscope size={26} />
+              </div>
+              <div>
+                <h2 style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: '1.25rem', letterSpacing: '-0.02em', marginBottom: 4 }}>
+                  Physio, osteo, GP, or sports medicine?
+                </h2>
+                <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', maxWidth: '50ch' }}>
+                  Answer two quick questions and we'll match your problem to the right type of specialist — including red-flag warnings for symptoms that need urgent care.
+                </p>
+              </div>
+            </div>
+            <Link to="/symptom-checker" className="btn-primary btn-primary-lg" style={{ flexShrink: 0 }}>
+              Try the Symptom Checker
+              <ArrowRight size={15} />
+            </Link>
           </div>
         </div>
       </section>
@@ -219,9 +281,9 @@ export default function Home() {
                 <div className="section-tag">Featured</div>
                 <h2 className="section-title" style={{ fontSize: 'clamp(1.4rem, 3vw, 2rem)' }}>Top practitioners</h2>
               </div>
-              <a href="/search" style={{ display: 'flex', alignItems: 'center', gap: 4, color: 'var(--c-cobalt-700)', fontWeight: 600, fontSize: '0.875rem' }}>
+              <Link to="/search" style={{ display: 'flex', alignItems: 'center', gap: 4, color: 'var(--c-cobalt-700)', fontWeight: 600, fontSize: '0.875rem' }}>
                 View all <ChevronRight size={16} />
-              </a>
+              </Link>
             </div>
             <div className="practitioners-grid">
               {featured.map(p => <PractitionerCard key={p.id} practitioner={p} />)}
@@ -229,6 +291,43 @@ export default function Home() {
           </div>
         </section>
       )}
+
+      {/* ── GUIDES TEASER ── */}
+      <section style={{ padding: 'var(--s-12) 0 0' }}>
+        <div className="page-container">
+          <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: 'var(--s-5)', flexWrap: 'wrap', gap: 12 }}>
+            <div>
+              <div className="section-tag">Guides & Advice</div>
+              <h2 className="section-title" style={{ fontSize: 'clamp(1.4rem, 3vw, 2rem)' }}>Know before you book</h2>
+            </div>
+            <Link to="/blog" style={{ display: 'flex', alignItems: 'center', gap: 4, color: 'var(--c-cobalt-700)', fontWeight: 600, fontSize: '0.875rem' }}>
+              All guides <ChevronRight size={16} />
+            </Link>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 'var(--s-3)' }}>
+            {blogPosts.slice(0, 3).map(post => (
+              <Link
+                key={post.slug}
+                to={`/blog/${post.slug}`}
+                style={{
+                  background: 'white', border: '1px solid var(--surface-border)',
+                  borderRadius: 'var(--r-lg)', padding: 'var(--s-4)',
+                  display: 'flex', flexDirection: 'column', gap: 10,
+                  transition: 'all 0.2s', boxShadow: 'var(--card-shadow)',
+                }}
+                onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-3px)'; e.currentTarget.style.boxShadow = 'var(--card-shadow-hv)' }}
+                onMouseLeave={e => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = 'var(--card-shadow)' }}
+              >
+                <BookOpen size={18} style={{ color: 'var(--c-cobalt-100)' }} />
+                <h3 style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: '0.95rem', lineHeight: 1.35, color: 'var(--text-primary)' }}>
+                  {post.title}
+                </h3>
+                <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{post.readMins} min read</span>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
 
       {/* ── PRACTITIONER CTA ── */}
       <section style={{ padding: 'var(--s-12) 0' }}>
@@ -249,12 +348,12 @@ export default function Home() {
                 Are you a healthcare professional?
               </h2>
               <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.95rem', maxWidth: '48ch' }}>
-                Join the directory, set your availability, and let patients in your area find and book with you directly.
+                Free verified listing, online bookings, patient enquiries, review management, and a waitlist that captures patients even when you're full.
               </p>
             </div>
-            <a href="/register" className="btn-primary btn-primary-lg" style={{ flexShrink: 0, background: 'white', color: 'var(--c-cobalt-700)' }}>
-              List Your Practice
-            </a>
+            <Link to="/register" className="btn-primary btn-primary-lg" style={{ flexShrink: 0, background: 'white', color: 'var(--c-cobalt-700)' }}>
+              List Your Practice — Free
+            </Link>
           </div>
         </div>
       </section>

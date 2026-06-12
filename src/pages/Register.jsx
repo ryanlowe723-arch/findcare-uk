@@ -3,18 +3,20 @@ import { useNavigate } from 'react-router-dom'
 import { CheckCircle, Upload, X } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import { resolveLocation } from '../lib/geo'
+import { useSeo } from '../lib/seo'
 
-const STEPS = ['Identity', 'Practice', 'Location', 'Services']
+const STEPS = ['Identity', 'Credentials', 'Practice', 'Location', 'Services']
 
 const TYPES = ['GP', 'Physiotherapist', 'Sports Medicine', 'Osteopath', 'Chiropractor', 'Psychologist', 'Nutritionist', 'Specialist']
 const TITLES = ['Dr', 'Mr', 'Mrs', 'Ms', 'Miss', 'Prof']
 const LANGUAGES = ['English', 'Welsh', 'French', 'Spanish', 'Urdu', 'Punjabi', 'Hindi', 'Arabic', 'Polish', 'Bengali']
+const REG_BODIES = ['GMC', 'HCPC', 'NMC', 'GOsC', 'GCC', 'BACP', 'BPS', 'AfN', 'Other']
 
 function TagInput({ value, onChange, placeholder }) {
   const [input, setInput] = useState('')
 
   const add = (tag) => {
-    const cleaned = tag.trim().toLowerCase()
+    const cleaned = tag.trim()
     if (cleaned && !value.includes(cleaned)) onChange([...value, cleaned])
     setInput('')
   }
@@ -56,8 +58,14 @@ export default function Register() {
   const [done, setDone] = useState(false)
   const [errors, setErrors] = useState({})
 
+  useSeo({
+    title: 'Join the Directory — Free Practitioner Listing',
+    description: 'List your practice on FindCare UK for free. Reach patients searching for your specialty, manage bookings online, and grow your practice.',
+    path: '/register',
+  })
+
   const [form, setForm] = useState({
-    // Step 0: Identity
+    // Identity
     title: 'Dr',
     name: '',
     email: '',
@@ -65,22 +73,31 @@ export default function Register() {
     phone: '',
     photo: null,
     photoPreview: null,
-    // Step 1: Practice
+    // Credentials
+    registration_body: 'HCPC',
+    registration_number: '',
+    qualifications: [],
+    years_experience: '',
+    // Practice
     types: [],
     specialties: [],
     bio: '',
     website: '',
-    // Step 2: Location
+    google_place_id: '',
+    trustpilot_url: '',
+    // Location
     postcode: '',
     location_name: '',
     lat: null,
     lng: null,
     locationResolved: false,
-    // Step 3: Services
+    // Services
     accepts_nhs: false,
     accepts_private: true,
     emergency_available: false,
     has_booking: false,
+    offers_video: false,
+    offers_home_visits: false,
     languages: ['English'],
   })
 
@@ -94,10 +111,13 @@ export default function Register() {
       if (!form.password || form.password.length < 8) e.password = 'Minimum 8 characters'
     }
     if (step === 1) {
+      if (!form.registration_number.trim()) e.registration_number = 'Required — we verify every practitioner'
+    }
+    if (step === 2) {
       if (!form.types.length) e.types = 'Select at least one type'
       if (!form.bio.trim()) e.bio = 'Required'
     }
-    if (step === 2) {
+    if (step === 3) {
       if (!form.postcode.trim()) e.postcode = 'Required'
       if (!form.locationResolved) e.postcode = 'Click Verify to confirm your postcode'
     }
@@ -133,7 +153,6 @@ export default function Register() {
     setSubmitting(true)
 
     try {
-      // 1. Create auth user
       const { data: authData, error: authErr } = await supabase.auth.signUp({
         email: form.email,
         password: form.password,
@@ -143,7 +162,6 @@ export default function Register() {
 
       const userId = authData.user?.id
 
-      // 2. Upload photo if provided
       let photoUrl = null
       if (form.photo) {
         const ext = form.photo.name.split('.').pop()
@@ -160,7 +178,6 @@ export default function Register() {
         }
       }
 
-      // 3. Insert practitioner record
       const { error: insertErr } = await supabase.from('practitioners').insert({
         user_id: userId,
         name: form.name,
@@ -170,8 +187,12 @@ export default function Register() {
         bio: form.bio || null,
         photo_url: photoUrl,
         website: form.website || null,
+        registration_body: form.registration_body,
+        registration_number: form.registration_number,
+        qualifications: form.qualifications,
+        years_experience: form.years_experience ? Number(form.years_experience) : null,
         types: form.types,
-        specialties: form.specialties,
+        specialties: form.specialties.map(s => s.toLowerCase()),
         postcode: form.postcode.toUpperCase(),
         location_name: form.location_name,
         lat: form.lat,
@@ -180,7 +201,11 @@ export default function Register() {
         accepts_private: form.accepts_private,
         emergency_available: form.emergency_available,
         has_booking: form.has_booking,
+        offers_video: form.offers_video,
+        offers_home_visits: form.offers_home_visits,
         languages: form.languages,
+        google_place_id: form.google_place_id || null,
+        trustpilot_url: form.trustpilot_url || null,
         status: 'pending',
       })
 
@@ -199,15 +224,10 @@ export default function Register() {
       <div className="page-top" style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', background: 'var(--surface-raised)' }}>
         <div style={{ maxWidth: 500, marginInline: 'auto', padding: 'var(--s-4)', textAlign: 'center' }}>
           <div style={{
-            width: 72,
-            height: 72,
-            borderRadius: '50%',
-            background: 'var(--c-green-50)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            marginInline: 'auto',
-            marginBottom: 'var(--s-3)',
+            width: 72, height: 72, borderRadius: '50%',
+            background: 'var(--c-green-50)', display: 'flex',
+            alignItems: 'center', justifyContent: 'center',
+            marginInline: 'auto', marginBottom: 'var(--s-3)',
           }}>
             <CheckCircle size={36} style={{ color: 'var(--c-green)' }} />
           </div>
@@ -215,7 +235,7 @@ export default function Register() {
             Application submitted!
           </h1>
           <p style={{ color: 'var(--text-secondary)', lineHeight: 1.7, marginBottom: 'var(--s-4)' }}>
-            Your listing is under review. We'll email you at <strong>{form.email}</strong> once it's approved — usually within 24–48 hours.
+            We're verifying your {form.registration_body} registration. You'll get an email at <strong>{form.email}</strong> once approved — usually within 24–48 hours.
           </p>
           <button onClick={() => navigate('/')} className="btn-primary" style={{ marginInline: 'auto' }}>
             Back to Home
@@ -227,14 +247,14 @@ export default function Register() {
 
   return (
     <div className="page-top" style={{ minHeight: '100vh', background: 'var(--surface-raised)', padding: 'var(--s-8) 0' }}>
-      <div style={{ maxWidth: 640, marginInline: 'auto', padding: '0 var(--s-4)' }}>
+      <div style={{ maxWidth: 660, marginInline: 'auto', padding: '0 var(--s-4)' }}>
         <div style={{ textAlign: 'center', marginBottom: 'var(--s-5)' }}>
           <div className="section-tag">Practitioner Registration</div>
           <h1 style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: 'clamp(1.6rem, 4vw, 2.2rem)', letterSpacing: '-0.03em', marginTop: 6 }}>
-            Join FindCare UK
+            Join FindCare UK — free
           </h1>
           <p style={{ color: 'var(--text-secondary)', marginTop: 8 }}>
-            Your listing goes live after a quick review — usually within 24 hours.
+            Verified listings, online bookings, patient enquiries. Live within 24–48 hours.
           </p>
         </div>
 
@@ -323,7 +343,7 @@ export default function Register() {
                       fontSize: '0.875rem',
                     }}>
                       <Upload size={18} />
-                      Upload photo (JPG, PNG)
+                      Upload photo — listings with photos get 3× more clicks
                       <input
                         type="file"
                         accept="image/*"
@@ -341,8 +361,46 @@ export default function Register() {
               </div>
             )}
 
-            {/* Step 1: Practice */}
+            {/* Step 1: Credentials */}
             {step === 1 && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--s-3)' }}>
+                <h2 style={{ fontFamily: 'var(--font-display)', fontWeight: 700, marginBottom: 4 }}>Professional credentials</h2>
+                <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem', marginTop: -8 }}>
+                  We verify every practitioner against their professional register before listing — this is what makes FindCare trusted.
+                </p>
+
+                <div style={{ display: 'grid', gridTemplateColumns: '160px 1fr', gap: 'var(--s-2)' }}>
+                  <div className="form-group">
+                    <label className="form-label">Register *</label>
+                    <select className="form-input" value={form.registration_body} onChange={e => set('registration_body', e.target.value)}>
+                      {REG_BODIES.map(b => <option key={b}>{b}</option>)}
+                    </select>
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">Registration number *</label>
+                    <input className="form-input" value={form.registration_number} onChange={e => set('registration_number', e.target.value)} placeholder="e.g. PH123456" />
+                    {errors.registration_number && <span className="form-error">{errors.registration_number}</span>}
+                  </div>
+                </div>
+
+                <div className="form-group">
+                  <label className="form-label">Qualifications</label>
+                  <TagInput
+                    value={form.qualifications}
+                    onChange={v => set('qualifications', v)}
+                    placeholder="e.g. BSc (Hons) Physiotherapy — press Enter to add"
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label className="form-label">Years of experience</label>
+                  <input type="number" min="0" max="60" className="form-input" style={{ maxWidth: 160 }} value={form.years_experience} onChange={e => set('years_experience', e.target.value)} placeholder="e.g. 10" />
+                </div>
+              </div>
+            )}
+
+            {/* Step 2: Practice */}
+            {step === 2 && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--s-3)' }}>
                 <h2 style={{ fontFamily: 'var(--font-display)', fontWeight: 700, marginBottom: 4 }}>Your practice</h2>
 
@@ -376,7 +434,7 @@ export default function Register() {
                     placeholder="Type a condition and press Enter (e.g. knee injury, back pain...)"
                   />
                   <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: 4 }}>
-                    Press Enter or comma to add each condition
+                    These power patient search — add every condition you treat
                   </span>
                 </div>
 
@@ -396,11 +454,24 @@ export default function Register() {
                   <label className="form-label">Practice website</label>
                   <input type="url" className="form-input" value={form.website} onChange={e => set('website', e.target.value)} placeholder="https://your-practice.co.uk" />
                 </div>
+
+                <div className="form-group">
+                  <label className="form-label">Google Business Profile (optional)</label>
+                  <input className="form-input" value={form.google_place_id} onChange={e => set('google_place_id', e.target.value)} placeholder="Google Place ID — shows your Google reviews on your profile" />
+                  <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: 4 }}>
+                    Find yours at developers.google.com/maps/documentation/places/web-service/place-id
+                  </span>
+                </div>
+
+                <div className="form-group">
+                  <label className="form-label">Trustpilot page (optional)</label>
+                  <input type="url" className="form-input" value={form.trustpilot_url} onChange={e => set('trustpilot_url', e.target.value)} placeholder="https://uk.trustpilot.com/review/your-practice.co.uk" />
+                </div>
               </div>
             )}
 
-            {/* Step 2: Location */}
-            {step === 2 && (
+            {/* Step 3: Location */}
+            {step === 3 && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--s-3)' }}>
                 <h2 style={{ fontFamily: 'var(--font-display)', fontWeight: 700, marginBottom: 4 }}>Your location</h2>
                 <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem' }}>
@@ -414,18 +485,10 @@ export default function Register() {
                       className="form-input"
                       style={{ flex: 1 }}
                       value={form.postcode}
-                      onChange={e => {
-                        set('postcode', e.target.value)
-                        setForm(f => ({ ...f, postcode: e.target.value, locationResolved: false }))
-                      }}
+                      onChange={e => setForm(f => ({ ...f, postcode: e.target.value, locationResolved: false }))}
                       placeholder="SW1A 1AA"
                     />
-                    <button
-                      type="button"
-                      className="btn-secondary"
-                      onClick={resolvePostcode}
-                      style={{ flexShrink: 0 }}
-                    >
+                    <button type="button" className="btn-secondary" onClick={resolvePostcode} style={{ flexShrink: 0 }}>
                       Verify
                     </button>
                   </div>
@@ -440,55 +503,31 @@ export default function Register() {
               </div>
             )}
 
-            {/* Step 3: Services */}
-            {step === 3 && (
+            {/* Step 4: Services */}
+            {step === 4 && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--s-3)' }}>
                 <h2 style={{ fontFamily: 'var(--font-display)', fontWeight: 700, marginBottom: 4 }}>Services & availability</h2>
 
                 <div>
-                  <div className="toggle-row">
-                    <div>
-                      <div className="toggle-label">NHS appointments</div>
-                      <div className="toggle-desc">I accept NHS-funded or NHS-referred patients</div>
+                  {[
+                    ['accepts_nhs', 'NHS appointments', 'I accept NHS-funded or NHS-referred patients'],
+                    ['accepts_private', 'Private appointments', 'I accept self-paying / privately-insured patients'],
+                    ['emergency_available', 'Emergency / same-day slots', 'I can accommodate urgent appointments'],
+                    ['offers_video', 'Video consultations', 'I offer remote video appointments'],
+                    ['offers_home_visits', 'Home visits', 'I can visit patients at home'],
+                    ['has_booking', 'Enable online booking', 'Patients can book appointments directly through your profile'],
+                  ].map(([key, label, desc]) => (
+                    <div key={key} className="toggle-row">
+                      <div>
+                        <div className="toggle-label">{label}</div>
+                        <div className="toggle-desc">{desc}</div>
+                      </div>
+                      <label className="toggle-switch">
+                        <input type="checkbox" checked={form[key]} onChange={e => set(key, e.target.checked)} />
+                        <span className="toggle-slider" />
+                      </label>
                     </div>
-                    <label className="toggle-switch">
-                      <input type="checkbox" checked={form.accepts_nhs} onChange={e => set('accepts_nhs', e.target.checked)} />
-                      <span className="toggle-slider" />
-                    </label>
-                  </div>
-
-                  <div className="toggle-row">
-                    <div>
-                      <div className="toggle-label">Private appointments</div>
-                      <div className="toggle-desc">I accept self-paying / privately-insured patients</div>
-                    </div>
-                    <label className="toggle-switch">
-                      <input type="checkbox" checked={form.accepts_private} onChange={e => set('accepts_private', e.target.checked)} />
-                      <span className="toggle-slider" />
-                    </label>
-                  </div>
-
-                  <div className="toggle-row">
-                    <div>
-                      <div className="toggle-label">Emergency / same-day slots</div>
-                      <div className="toggle-desc">I can accommodate urgent appointments</div>
-                    </div>
-                    <label className="toggle-switch">
-                      <input type="checkbox" checked={form.emergency_available} onChange={e => set('emergency_available', e.target.checked)} />
-                      <span className="toggle-slider" />
-                    </label>
-                  </div>
-
-                  <div className="toggle-row">
-                    <div>
-                      <div className="toggle-label">Enable online booking</div>
-                      <div className="toggle-desc">Patients can book appointments directly through your profile</div>
-                    </div>
-                    <label className="toggle-switch">
-                      <input type="checkbox" checked={form.has_booking} onChange={e => set('has_booking', e.target.checked)} />
-                      <span className="toggle-slider" />
-                    </label>
-                  </div>
+                  ))}
                 </div>
 
                 <div className="form-group">
@@ -513,7 +552,7 @@ export default function Register() {
                 </div>
 
                 <div className="alert alert-info" style={{ marginTop: 8 }}>
-                  By submitting, you confirm that all information is accurate and that you hold the relevant professional qualifications and registrations (GMC, HCPC, NMC, etc.).
+                  By submitting, you confirm all information is accurate and you hold the registrations stated. We check every registration number before approval.
                 </div>
               </div>
             )}

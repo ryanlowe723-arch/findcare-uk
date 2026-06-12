@@ -1,10 +1,44 @@
 <!doctype html>
-<html lang="en">
+<html lang="en-GB">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>vivera-directory</title>
+    <meta name="theme-color" content="#1E3A8A" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+
+    <title>FindCare UK — Find Doctors, Physios & Specialists Near You</title>
+    <meta name="description" content="Find verified doctors, physiotherapists, and specialists near you. Search by condition, compare reviews, and book appointments online — including emergency and same-day slots." />
+    <meta name="keywords" content="find a physiotherapist, find a doctor UK, private GP near me, sports injury specialist, emergency physio, book physio online, knee injury specialist, back pain specialist" />
+
+    <meta property="og:title" content="FindCare UK — Find Doctors, Physios & Specialists Near You" />
+    <meta property="og:description" content="Search verified UK healthcare practitioners by condition and location. Book appointments online, including emergency slots." />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="FindCare UK" />
+    <meta property="og:locale" content="en_GB" />
+
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="FindCare UK — Find Doctors, Physios & Specialists Near You" />
+    <meta name="twitter:description" content="Search verified UK healthcare practitioners by condition and location. Book appointments online, including emergency slots." />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preconnect" href="https://api.postcodes.io" />
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "FindCare UK",
+      "url": "https://findcare-uk.vercel.app",
+      "description": "UK healthcare directory — find verified doctors, physiotherapists and specialists by condition and location, with online booking and emergency slots.",
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://findcare-uk.vercel.app/search?condition={search_term_string}",
+        "query-input": "required name=search_term_string"
+      }
+    }
+    </script>
   </head>
   <body>
     <div id="root"></div>

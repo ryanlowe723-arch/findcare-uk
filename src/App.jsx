@@ -7,10 +7,19 @@ import './index.css'
 const Home                = lazy(() => import('./pages/Home'))
 const Search              = lazy(() => import('./pages/Search'))
 const PractitionerProfile = lazy(() => import('./pages/PractitionerProfile'))
+const SymptomChecker      = lazy(() => import('./pages/SymptomChecker'))
+const Favourites          = lazy(() => import('./pages/Favourites'))
+const Blog                = lazy(() => import('./pages/Blog'))
+const BlogPost            = lazy(() => import('./pages/BlogPost'))
+const Faq                 = lazy(() => import('./pages/Faq'))
 const Register            = lazy(() => import('./pages/Register'))
 const Login               = lazy(() => import('./pages/Login'))
 const Dashboard           = lazy(() => import('./pages/Dashboard'))
 const Admin               = lazy(() => import('./pages/Admin'))
+const CancelBooking       = lazy(() => import('./pages/CancelBooking'))
+const Privacy             = lazy(() => import('./pages/Privacy'))
+const Terms               = lazy(() => import('./pages/Terms'))
+const NotFound            = lazy(() => import('./pages/NotFound'))
 
 function ProtectedRoute({ children }) {
   const { user, loading } = useAuth()
@@ -26,6 +35,23 @@ function AdminRoute({ children }) {
   const isAdmin = user?.user_metadata?.role === 'admin'
   if (!isAdmin) return <Navigate to="/" replace />
   return children
+}
+
+function PageLoader() {
+  return (
+    <div style={{
+      minHeight: '100vh',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      color: 'var(--text-muted)',
+      fontFamily: 'var(--font-data)',
+      fontSize: '0.8rem',
+      letterSpacing: '0.1em',
+    }}>
+      LOADING...
+    </div>
+  )
 }
 
 class ErrorBoundary extends Component {
@@ -65,23 +91,6 @@ class ErrorBoundary extends Component {
   }
 }
 
-function PageLoader() {
-  return (
-    <div style={{
-      minHeight: '100vh',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      color: 'var(--text-muted)',
-      fontFamily: 'var(--font-data)',
-      fontSize: '0.8rem',
-      letterSpacing: '0.1em',
-    }}>
-      LOADING...
-    </div>
-  )
-}
-
 function AppRoutes() {
   return (
     <Layout>
@@ -90,11 +99,19 @@ function AppRoutes() {
           <Route path="/"                  element={<Home />} />
           <Route path="/search"            element={<Search />} />
           <Route path="/practitioners/:id" element={<PractitionerProfile />} />
+          <Route path="/symptom-checker"   element={<SymptomChecker />} />
+          <Route path="/saved"             element={<Favourites />} />
+          <Route path="/blog"              element={<Blog />} />
+          <Route path="/blog/:slug"        element={<BlogPost />} />
+          <Route path="/faq"               element={<Faq />} />
           <Route path="/register"          element={<Register />} />
           <Route path="/login"             element={<Login />} />
+          <Route path="/cancel-booking"    element={<CancelBooking />} />
+          <Route path="/privacy"           element={<Privacy />} />
+          <Route path="/terms"             element={<Terms />} />
           <Route path="/dashboard"         element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
           <Route path="/admin"             element={<AdminRoute><Admin /></AdminRoute>} />
-          <Route path="*"                  element={<Navigate to="/" replace />} />
+          <Route path="*"                  element={<NotFound />} />
         </Routes>
       </Suspense>
     </Layout>

@@ -1,0 +1,34 @@
+# FindCare UK
+
+> FindCare UK is a free UK healthcare directory where patients search for verified doctors, physiotherapists, sports medicine specialists, osteopaths, chiropractors, psychologists, and nutritionists by condition and location. It shows real-time availability — including emergency and same-day appointments — verified professional credentials (GMC, HCPC, NMC registration), patient reviews, and direct online booking.
+
+## What you can do on FindCare UK
+
+- Search practitioners by condition (e.g. "knee injury", "back pain") plus postcode or town
+- Filter by practitioner type, distance, emergency availability, NHS acceptance, video consultations, and language
+- Use the symptom checker to find which kind of specialist treats a specific problem
+- View verified practitioner profiles with credentials, qualifications, years of experience, and moderated patient reviews
+- Book appointments online in real time, or join a waitlist when a practitioner is full
+- Send direct enquiries to practitioners
+
+## For healthcare professionals
+
+- Free listing with admin verification of professional registration (GMC / HCPC / NMC / GOsC / GCC / BACP)
+- Dashboard to manage profile, weekly recurring availability, bookings, enquiries, and review replies
+- Emergency slot flagging to reach patients needing urgent care
+
+## Key pages
+
+- Home / search: /
+- Search results: /search
+- Symptom checker: /symptom-checker
+- Blog & guides: /blog
+- FAQ: /faq
+- Practitioner registration: /register
+
+## Facts
+
+- Coverage: United Kingdom
+- Cost to patients: free
+- Practitioner verification: registration numbers checked against the relevant UK professional register before approval
+- Booking: real-time slots, no account required for patients

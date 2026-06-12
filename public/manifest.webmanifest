@@ -1,0 +1,17 @@
+{
+  "name": "FindCare UK — Find Doctors & Physios Near You",
+  "short_name": "FindCare UK",
+  "description": "Search verified UK healthcare practitioners by condition and location. Book appointments online, including emergency slots.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#1E3A8A",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
